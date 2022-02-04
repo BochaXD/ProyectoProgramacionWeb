@@ -1,0 +1,64 @@
+#series de tiempo
+x=c(1,2,3,4,5,6,7,8,9,10,11,12)
+y=c(105,135,120,105,90,120,145,140,100,80,100,110)
+
+#1)
+#promedio movil
+#pronostico para el mes 13 
+mes13=(80+100+110)/3
+#2)
+#CMEs
+#que ventana obtiene mejor pronostico
+#ventana =1,2,3,...
+n=3
+mes<-function(y,n){filter(y,rep(1/n,n),sides =1 )}
+prom=mes(y,n)
+pro=prom[n:(length(prom)-1)]#pronostico
+#errores
+error=y[n+1:(length(y)-n)]-pro
+errorcuad= error^2
+sumerrorcuad=sum(errorcuad)
+CME=sumerrorcuad/length(errorcuad)
+#CME ventanas:n1=511.3636, n2=708.125, n3=-811.4198,n4=709,5703,n5=548.1429,n6
+#n6=568.0556,n7=504.6939,n8=526.6602,n9=551.1317...
+#se puede observar que n4 y n3 tienes buenos valores para la ventana no obstante 
+#n=3 es mejor ya que es mas bajo que n=4
+plot(x,y, type="l", pch = 19, col="red",main="Ventas deteminado producto") #grafico de dispersion
+par(new=TRUE)
+#3
+#a=0.3 valores que se obtienen para esta serie de tiempo
+a=0.3
+#suavisamiento
+sua = HoltWinters(y, a, beta=FALSE, gamma=FALSE)
+s1 = sua$fitted[,1]
+err_pr_sua = y[2:(length(y))]-s1
+err_pr_sua2 = err_pr_sua^2 
+CME_s = sum(err_pr_sua2)/length(s1)
+plot(x,y, type="l", pch = 19, col="red",main="Ventas deteminado producto")
+     par(new=TRUE)
+lines(x[2:(length(y))],s1, type="l", pch = 19, col="blue")
+#4
+#cual es el peso que se asigno al valor real en t=6, calcular pronostico en t=12
+t=c(1/6,2/6,3/6)
+m=(1/6(120)+2/6(105)+3/6(90))
+#5
+#use a=0.5 para los valores de suavisamiento exponencial
+a1=0.5
+sua1 = HoltWinters(y, a1, beta=FALSE, gamma=FALSE)
+s2 = sua1$fitted[,1]
+err_pr_sua1 = y[2:(length(y))]-s2
+err_pr_sua12 = err_pr_sua1^2 
+CME_s1 = sum(err_pr_sua12)/length(s2)
+#a=0.3 obtuvimos un cme=510.2822 y con a1=0.5 obtuvimos cme=540.5719
+#por ende alfa =0.5 es mucho mejor ya que es menor a alfa 0.3
+plot(x,y, type="l", pch = 19, col="red",main="Ventas deteminado producto")
+par(new=TRUE)
+lines(x[2:(length(y))],s1, type="l", pch = 19, col="blue")
+lines(x[2:(length(y))],s2, type="l", pch = 19, col="green")
+
+#6
+#compare los pronosticos obtenidos 
+CME# metodos de promedios=811.4198
+CME_s##suavisamiento exponencial a=0.3 CME=510.2822
+#en este caso el ejor pronostico obtenido es de promedios moviles 
+#ya que el CME es mas bajo

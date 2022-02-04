@@ -1,0 +1,27 @@
+x=c(1:length(y))#meses
+y=c(80,82,84,83,83,84,85,84,82,83,84,83)#pedidos utimos 12 meses
+
+
+#promedios moviles
+n=3
+meses<-function(y,n){filter(y,rep(1/n,n),sides =1 )}#ventana
+pro=meses(y,n)#promedio moviles
+pro=prom[n:(length(prom)-1)]#pronostico
+error=y[n+1:(length(y)-n)]-pro#error pronostico
+errorc2= error^2#eeror cuadrado
+SEC=sum(errorc2)
+CME=SEC/length(errorc2)
+
+#suavisamiento
+a=0.2
+suv= HoltWinters(y,a,beta = FALSE, gamma = FALSE)#metodo suavizamiento
+v=suv$fitted[,1]
+error1=y[2:(length(y))]-v
+errorc21=error1^2
+SEC1=sum(error1)
+CME1=SEC1/length(errorc21)
+
+#Pronostico sig mes 
+
+mes13=(83+84+83)/3
+
